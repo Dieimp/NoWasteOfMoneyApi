@@ -13,12 +13,13 @@ Nossa stack é escolhida para performance e segurança de nível de produção:
 | **Backend Core** | **C# (.NET 9)** | Linguagem de alto desempenho e tipagem forte.                                         |
 | **Arquitetura**  | **MVC**         | Model View Controller contendo tambem dto e pastas para arquitetura do banco de dados |
 
-|
-| **Padrão de Dados** | **CQRS (Command/Query)** | Separação lógica para otimizar leitura (Query) e escrita (Command). |
-| **Banco de Dados** | **aDEFINIR** | |
-| **Acesso a Dados** | **Entity Framework Core ** | EF Core como ORM geral |
-| **Segurança** | **A DEFINIR** | |
-| **Container** | **A DEFINIR** | . |
+| Componente          | Tecnologia                 | Propósito                                                           |
+| :------------------ | :------------------------- | :------------------------------------------------------------------ |
+| **Padrão de Dados** | **CQRS (Command/Query)**   | Separação lógica para otimizar leitura (Query) e escrita (Command). |
+| **Banco de Dados**  | **aDEFINIR**               |                                                                     |
+| **Acesso a Dados**  | **Entity Framework Core ** | EF Core como ORM geral                                              |
+| **Segurança**       | **A DEFINIR**              |                                                                     |
+| **Container**       | **A DEFINIR**              | .                                                                   |
 
 ## 🚀 Como Rodar o Projeto Localmente
 
