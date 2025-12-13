@@ -1,0 +1,78 @@
+# Arquivo .gitignore para Projetos ASP.NET Core e Visual Studio
+
+###################################
+# Arquivos e Pastas de Build e Execução
+###################################
+
+# Pastas de saída de build (binários)
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Aa]rm64/
+[Aa]rm/
+[Xx]64/
+[Xx]86/
+
+# Resultado de publicação do .NET
+**/*.exe
+**/*.dll
+**/*.pdb
+**/*.xml
+**/*.runtimeconfig.json
+Publish/
+dist/
+
+# Logs e arquivos temporários de execução
+*.log
+*.tmp
+temp/
+
+###################################
+# Pastas de Ferramentas e IDEs
+###################################
+
+# Visual Studio / Visual Studio Code
+*.vspscc
+*.vssscc
+*.suo
+*.user
+*.userossc
+*.sln.docstates
+
+# Visual Studio Code Cache e Configurações de Usuário (Excluir o .vscode completo se for ambiente de equipe)
+.vscode/
+
+# Pacotes e Cache do NuGet
+# (O NuGet restaura os pacotes, não precisamos versionar)
+packages/
+*.nupkg
+.nuget/
+NuGetScratch/
+NuGetScratch2/
+
+###################################
+# Ferramentas de Teste
+###################################
+
+# Resultados de teste
+TestResults/
+.trx
+
+###################################
+# Configurações de Ambiente e Segurança
+###################################
+
+# Arquivos de Configuração de Ambiente Local
+# ESTE É CRÍTICO para segurança! NUNCA commite credenciais de conexão.
+# O ASP.NET Core usa appsettings.Development.json, mas o User Secrets é preferido.
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.json.user
+appsettings.*.json
+
+# User Secrets (Local) - Onde credenciais de banco de dados são armazenadas localmente
+.secrets/
+
+
