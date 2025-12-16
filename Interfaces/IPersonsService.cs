@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using NoWasteOfMoney.Models;
+using NoWasteOfMoney.Models.Entities;
 using NoWasteOfMoney.Models.Dtos;
 
 namespace NoWasteOfMoney.Interfaces

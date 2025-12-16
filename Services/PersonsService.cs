@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NoWasteOfMoney.Infrastructure.Database;
 using NoWasteOfMoney.Interfaces;
-using NoWasteOfMoney.Models;
+using NoWasteOfMoney.Models.Entities;
 using NoWasteOfMoney.Models.Dtos;
 
 namespace NoWasteOfMoney.Services

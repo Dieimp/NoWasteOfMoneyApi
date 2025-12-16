@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NoWasteOfMoney.Interfaces;
-using NoWasteOfMoney.Models;
+using NoWasteOfMoney.Models.Entities;
 using NoWasteOfMoney.Models.Dtos;
 using NoWasteOfMoney.Services;
 
