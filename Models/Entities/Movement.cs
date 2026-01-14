@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-
-
 namespace NoWasteOfMoney.Models.Entities
 {
-    public class TransactionType
+    public class Movement
     {
         public int Id { get; set; }
 
