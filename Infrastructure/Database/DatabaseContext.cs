@@ -13,6 +13,8 @@ namespace NoWasteOfMoney.Infrastructure.Database
 
         public DbSet<Person> Persons { get; set; }
 
+        public DbSet<Movement> Movements { get; set; }
+
 
         //Estudadr melhor
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -20,6 +22,32 @@ namespace NoWasteOfMoney.Infrastructure.Database
             modelBuilder.Entity<Person>()
                 .HasIndex(p => p.Email)
                 .IsUnique();
+
+
+            modelBuilder.Entity<MovementType>(entity =>
+            {
+                //Valores padroes da tabela auxiliar
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+
+                entity.HasData(MovementType.Debit, MovementType.Credit);
+            });
+
+            // 2. Configuração da Entidade Movement (Sua solicitação corrigida)
+            modelBuilder.Entity<Movement>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                // Configuração da FK para o Smart Enum
+                entity.HasOne(d => d.MovementType)
+                      .WithMany(p => p.Movements) // Se você não tiver a coleção no MovementType, use .WithMany() vazio
+                      .HasForeignKey(d => d.MovementTypeId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                // Índices adicionais para performance
+                entity.HasIndex(e => e.MovementTypeId);
+            });
         }
 
     }

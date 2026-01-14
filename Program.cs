@@ -12,6 +12,7 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IPersonsService, PersonsService>();
+builder.Services.AddScoped<IMovementService, MovementService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
