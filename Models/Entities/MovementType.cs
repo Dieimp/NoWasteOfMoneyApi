@@ -8,14 +8,22 @@ namespace NoWasteOfMoney.Models.Entities
 {
     public class MovementType
     {
-        public int Id { get; set; }
+        public static readonly MovementType Debit = new MovementType(1, "Debit");
+        public static readonly MovementType Credit = new MovementType(2, "Credit");
 
-        [Required]
-        [StringLength(100)]
-        public string Name { get; set; }
-        [Required]
-        [StringLength(255)]
-        public int Description { get; set; }
+        public int Id { get; private set; }
+        public string Name { get; private set; }
+
+        private MovementType(int id, string name)
+        {
+            Id = id;
+            Name = name;
+
+        }
+        // Propriedade de navegação inversa (Opcional, mas útil para consultas)
+        public virtual ICollection<Movement> Movements { get; set; } = new List<Movement>();
+        // Construtor privado para o EF Core
+        private MovementType() { }
 
     }
 }
