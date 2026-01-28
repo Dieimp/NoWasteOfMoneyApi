@@ -14,6 +14,7 @@ namespace NoWasteOfMoney.Infrastructure.Database
         public DbSet<Person> Persons { get; set; }
 
         public DbSet<Movement> Movements { get; set; }
+        public DbSet<MonthMovement> MonthMovements { get; set; }
 
 
         //Estudadr melhor
@@ -48,6 +49,25 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 // Índices adicionais para performance
                 entity.HasIndex(e => e.MovementTypeId);
             });
+
+            modelBuilder.Entity<MonthMovement>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+
+                entity.HasOne(d => d.Movement)
+                      .WithMany()
+                      .HasForeignKey(d => d.MovementId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.Person)
+                      .WithMany()
+                      .HasForeignKey(d => d.PersonId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => new { e.Month, e.Year });
+            });
+
         }
 
     }

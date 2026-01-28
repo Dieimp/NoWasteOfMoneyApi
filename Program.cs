@@ -13,6 +13,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IPersonsService, PersonsService>();
 builder.Services.AddScoped<IMovementService, MovementService>();
+builder.Services.AddScoped<IMonthMovementService, MonthMovementsService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
