@@ -11,8 +11,8 @@ namespace NoWasteOfMoney.Models.Dtos
         [Required(ErrorMessage = "O ID da movimentação é obrigatório.")]
         public int MovementId { get; init; }
 
-        [Required(ErrorMessage = "O ID da pessoa é obrigatório.")]
-        public int PersonId { get; init; }
+        // [Required(ErrorMessage = "O ID da pessoa é obrigatório.")]
+        // public int PersonId { get; init; }
 
         [Required(ErrorMessage = "O ID da pessoa é obrigatório.")]
         public DateOnly Date { get; init; }

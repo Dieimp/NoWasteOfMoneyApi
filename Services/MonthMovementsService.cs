@@ -117,8 +117,10 @@ namespace NoWasteOfMoney.Services
 
             var monthMovements =
                 await _context.MonthMovements
+                    .Include(m => m.Movement)
                     .Where(m => m.Year == Year && m.Month == month)
-                    .OrderBy(m => new { m.Year, m.Month })
+                    .OrderBy(m => m.Year)
+                    .ThenBy(m => m.Month)
                     .Skip(skipAmount)
                     .Take(pageSize)
                     .AsNoTracking()
@@ -165,20 +167,9 @@ namespace NoWasteOfMoney.Services
 
         private async Task<bool> PersonExists(int personId, MonthMovement monthMovement)
         {
-            MonthMovement person;
 
-            person = await _context.MonthMovements.FindAsync(personId);
-
-            if (person == null && monthMovement.PersonId == personId)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
-
+            return personId == monthMovement.PersonId &&
+               await _context.Persons.AnyAsync(p => p.Id == personId);
         }
 
         private async Task<bool> MovementExists(MonthMovement monthMovement)

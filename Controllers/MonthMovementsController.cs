@@ -31,16 +31,16 @@ namespace NoWasteOfMoney.Controllers
             var pagedResult = await _service.GetAll(pageNumber, pageSize, personId);
             return Ok(pagedResult);
         }
-        [HttpGet("{personId},{date}")]
+        [HttpGet("person/{personId:int}/date/{date}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
         public async Task<ActionResult<PagedResult<MonthMovement>>> GetMonthMovementsByMonth(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10,
-            [FromQuery] int personId = 0,
-            [FromQuery] DateOnly? date = null
-            )
+                    int personId,
+                    DateOnly? date,
+                    [FromQuery] int pageNumber = 1,
+                    [FromQuery] int pageSize = 10
+                    )
 
         {
             DateOnly refDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
@@ -59,16 +59,18 @@ namespace NoWasteOfMoney.Controllers
         public async Task<ActionResult<MonthMovement>> Create(int personId, CreateMonthMovement req)
         {
 
+
             var monthMovement = new MonthMovement
             {
                 MovementId = req.MovementId,
-                PersonId = req.PersonId,
+                // PersonId = req.PersonId,
                 Year = req.Date.Year,
                 Month = req.Date.Month,
                 Value = req.Value,
 
             };
-
+            //Console.WriteLine("id: " + personId.ToString());
+            monthMovement.PersonId = personId;
             await _service.Create(personId, monthMovement);
 
             return Ok(monthMovement.Id);
