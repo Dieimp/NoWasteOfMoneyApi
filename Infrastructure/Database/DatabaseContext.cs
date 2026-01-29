@@ -15,6 +15,7 @@ namespace NoWasteOfMoney.Infrastructure.Database
 
         public DbSet<Movement> Movements { get; set; }
         public DbSet<MonthMovement> MonthMovements { get; set; }
+        public DbSet<User> Users { get; set; }
 
 
         //Estudadr melhor
