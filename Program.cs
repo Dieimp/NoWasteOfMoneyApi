@@ -6,9 +6,15 @@ using NoWasteOfMoney.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Program.cs
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Detecta a versão do servidor automaticamente (Docker deve estar rodando)
+var serverVersion = ServerVersion.AutoDetect(connectionString);
+
 builder.Services.AddDbContext<DatabaseContext>(options =>
-    options.UseInMemoryDatabase("NoWasteOfMoney"));
+    options.UseMySql(connectionString, serverVersion, b => 
+        b.MigrationsAssembly("NoWasteOfMoney")));
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IPersonsService, PersonsService>();
