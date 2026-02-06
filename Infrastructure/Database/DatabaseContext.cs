@@ -25,6 +25,16 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 .HasIndex(p => p.Email)
                 .IsUnique();
 
+             modelBuilder.Entity<Person>().HasData(
+                new Person 
+                { 
+                    Id = 1,
+                    FirstName = "Pessoa",
+                    LastName  = "Top",
+                    Email = "adimin@semPerdaDeDinheiro.com" 
+                }
+             );
+
 
             modelBuilder.Entity<MovementType>(entity =>
             {
@@ -49,6 +59,21 @@ namespace NoWasteOfMoney.Infrastructure.Database
 
                 // Índices adicionais para performance
                 entity.HasIndex(e => e.MovementTypeId);
+
+                entity.HasData(
+                    new Movement{
+                        Id = 1,
+                        Name = "Academia",
+                        Description = "Ficar grande",
+                        MovementTypeId = 1
+                    },
+                    new Movement{
+                        Id = 2,
+                        Name = "Pos graduacao",
+                        Description = "Receba inteligencia",
+                        MovementTypeId = 1
+                    }
+                );
             });
 
             modelBuilder.Entity<MonthMovement>(entity =>
@@ -67,6 +92,16 @@ namespace NoWasteOfMoney.Infrastructure.Database
                       .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasIndex(e => new { e.Month, e.Year });
+
+
+                entity.HasData(new MonthMovement{
+                    Id = 1,
+                    MovementId = 1,
+                    PersonId = 1,
+                    Year = 2026,
+                    Month = 2
+
+                });
             });
 
         }
