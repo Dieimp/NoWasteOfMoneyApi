@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NoWasteOfMoney.Models.Entities;
+using NoWasteOfMoney.Models.Entities.NoWasteOfMoney.Domain.Entities;
 
 namespace NoWasteOfMoney.Infrastructure.Database
 {
@@ -25,6 +26,19 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 .HasIndex(p => p.Email)
                 .IsUnique();
 
+<<<<<<< Updated upstream
+=======
+            modelBuilder.Entity<Person>().HasData(
+               new Person
+               {
+                   Id = 1,
+                   FirstName = "Pessoa",
+                   LastName = "Top",
+                   Email = "adimin@semPerdaDeDinheiro.com"
+               }
+            );
+
+>>>>>>> Stashed changes
 
             modelBuilder.Entity<MovementType>(entity =>
             {
@@ -49,6 +63,26 @@ namespace NoWasteOfMoney.Infrastructure.Database
 
                 // Índices adicionais para performance
                 entity.HasIndex(e => e.MovementTypeId);
+<<<<<<< Updated upstream
+=======
+
+                entity.HasData(
+                    new Movement
+                    {
+                        Id = 1,
+                        Name = "Academia",
+                        Description = "Ficar grande",
+                        MovementTypeId = 1
+                    },
+                    new Movement
+                    {
+                        Id = 2,
+                        Name = "Pos graduacao",
+                        Description = "Receba inteligencia",
+                        MovementTypeId = 1
+                    }
+                );
+>>>>>>> Stashed changes
             });
 
             modelBuilder.Entity<MonthMovement>(entity =>
@@ -67,6 +101,20 @@ namespace NoWasteOfMoney.Infrastructure.Database
                       .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasIndex(e => new { e.Month, e.Year });
+<<<<<<< Updated upstream
+=======
+
+
+                entity.HasData(new MonthMovement
+                {
+                    Id = 1,
+                    MovementId = 1,
+                    PersonId = 1,
+                    Year = 2026,
+                    Month = 2
+
+                });
+>>>>>>> Stashed changes
             });
 
         }

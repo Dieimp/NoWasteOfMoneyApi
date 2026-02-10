@@ -2,7 +2,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using NoWasteOfMoney.Models.Entities;
+
+using NoWasteOfMoney.Models.Entities.NoWasteOfMoney.Domain.Entities;
+
 
 public class TokenService
 {
@@ -17,17 +19,19 @@ public class TokenService
     {
         var tokenHandler = new JwtSecurityTokenHandler();
 
-        var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:SecretKey"] ?? throw new InvalidOperationException("Secret Key não configurada."));
+        // Buscando a SecretKey do appsettings.json
+        var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:SecretKey"]
+            ?? throw new InvalidOperationException("Secret Key não encontrada no appsettings.json"));
 
-        var expiresAt = DateTime.UtcNow.AddHours(1);
+        var expiresAt = DateTime.UtcNow.AddHours(2); // Tempo de expiração padrão
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.Person.FirstName), // Pega da entidade relacionada
+                new Claim(ClaimTypes.Email, user.Person.Email),
                 new Claim(ClaimTypes.Role, user.Role),
                 new Claim("PersonId", user.PersonId.ToString())
             }),
