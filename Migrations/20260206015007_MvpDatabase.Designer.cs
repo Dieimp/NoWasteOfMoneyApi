@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NoWasteOfMoney.Infrastructure.Database;
 
@@ -11,9 +12,11 @@ using NoWasteOfMoney.Infrastructure.Database;
 namespace NoWasteOfMoney.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260206015007_MvpDatabase")]
+    partial class MvpDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,17 +57,6 @@ namespace NoWasteOfMoney.Migrations
                     b.HasIndex("Month", "Year");
 
                     b.ToTable("MonthMovements");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Month = 2,
-                            MovementId = 1,
-                            PersonId = 1,
-                            Value = 0m,
-                            Year = 2026
-                        });
                 });
 
             modelBuilder.Entity("NoWasteOfMoney.Models.Entities.Movement", b =>
@@ -93,22 +85,6 @@ namespace NoWasteOfMoney.Migrations
                     b.HasIndex("MovementTypeId");
 
                     b.ToTable("Movements");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Ficar grande",
-                            MovementTypeId = 1,
-                            Name = "Academia"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Receba inteligencia",
-                            MovementTypeId = 1,
-                            Name = "Pos graduacao"
-                        });
                 });
 
             modelBuilder.Entity("NoWasteOfMoney.Models.Entities.MovementType", b =>
@@ -167,15 +143,6 @@ namespace NoWasteOfMoney.Migrations
                         .IsUnique();
 
                     b.ToTable("Persons");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Email = "adimin@semPerdaDeDinheiro.com",
-                            FirstName = "Pessoa",
-                            LastName = "Top"
-                        });
                 });
 
             modelBuilder.Entity("NoWasteOfMoney.Models.Entities.User", b =>
