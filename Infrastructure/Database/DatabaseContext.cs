@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NoWasteOfMoney.Models.Entities;
+using NoWasteOfMoney.Models.Entities.NoWasteOfMoney.Domain.Entities;
 
 namespace NoWasteOfMoney.Infrastructure.Database
 {
@@ -24,6 +25,17 @@ namespace NoWasteOfMoney.Infrastructure.Database
             modelBuilder.Entity<Person>()
                 .HasIndex(p => p.Email)
                 .IsUnique();
+
+            modelBuilder.Entity<Person>().HasData(
+               new Person
+               {
+                   Id = 1,
+                   FirstName = "Pessoa",
+                   LastName = "Top",
+                   Email = "adimin@semPerdaDeDinheiro.com"
+               }
+            );
+
 
              modelBuilder.Entity<Person>().HasData(
                 new Person 
@@ -61,6 +73,10 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 entity.HasIndex(e => e.MovementTypeId);
 
                 entity.HasData(
+                    new Movement
+                    {
+
+                entity.HasData(
                     new Movement{
                         Id = 1,
                         Name = "Academia",
@@ -94,6 +110,10 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 entity.HasIndex(e => new { e.Month, e.Year });
 
 
+                entity.HasData(new MonthMovement
+                {
+
+
                 entity.HasData(new MonthMovement{
                     Id = 1,
                     MovementId = 1,
@@ -102,6 +122,7 @@ namespace NoWasteOfMoney.Infrastructure.Database
                     Month = 2
 
                 });
+
             });
 
         }

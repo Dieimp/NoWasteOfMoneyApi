@@ -2,6 +2,7 @@ using NoWasteOfMoney.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using NoWasteOfMoney.Interfaces;
 using NoWasteOfMoney.Services;
+using NoWasteOfMoney.Service.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,13 +14,19 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 var serverVersion = ServerVersion.AutoDetect(connectionString);
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
+    options.UseMySql(connectionString, serverVersion, b =>
+        b.MigrationsAssembly("NoWasteOfMoney")));
+
     options.UseMySql(connectionString, serverVersion, b => 
         b.MigrationsAssembly("NoWasteOfMoney")));
+
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IPersonsService, PersonsService>();
 builder.Services.AddScoped<IMovementService, MovementService>();
 builder.Services.AddScoped<IMonthMovementService, MonthMovementsService>();
+builder.Services.AddScoped<IUsersService, UserService>();
+builder.Services.AddScoped<TokenService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
