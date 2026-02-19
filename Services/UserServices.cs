@@ -25,13 +25,16 @@ namespace NoWasteOfMoney.Service.Services
             {
                 return null;
             }
-
+            Console.WriteLine("passou person");
 
             var user = await _context.Users
                 .Include(u => u.Person)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.PersonId == person.Id);
             Console.WriteLine(user.PasswordHash);
+
+            // Console.WriteLine(BCrypt.Net.BCrypt.HashPassword(user.PasswordHash));
+
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
             Console.WriteLine(isPasswordValid);

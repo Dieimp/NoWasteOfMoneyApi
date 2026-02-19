@@ -37,16 +37,6 @@ namespace NoWasteOfMoney.Infrastructure.Database
             );
 
 
-             modelBuilder.Entity<Person>().HasData(
-                new Person 
-                { 
-                    Id = 1,
-                    FirstName = "Pessoa",
-                    LastName  = "Top",
-                    Email = "adimin@semPerdaDeDinheiro.com" 
-                }
-             );
-
 
             modelBuilder.Entity<MovementType>(entity =>
             {
@@ -73,59 +63,62 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 entity.HasIndex(e => e.MovementTypeId);
 
                 entity.HasData(
+
+
+
                     new Movement
                     {
-
-                entity.HasData(
-                    new Movement{
                         Id = 1,
                         Name = "Academia",
                         Description = "Ficar grande",
                         MovementTypeId = 1
                     },
-                    new Movement{
+                    new Movement
+                    {
                         Id = 2,
                         Name = "Pos graduacao",
                         Description = "Receba inteligencia",
                         MovementTypeId = 1
                     }
-                );
-            });
 
-            modelBuilder.Entity<MonthMovement>(entity =>
-            {
-                entity.HasKey(e => e.Id);
+            );
 
-
-                entity.HasOne(d => d.Movement)
-                      .WithMany()
-                      .HasForeignKey(d => d.MovementId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(d => d.Person)
-                      .WithMany()
-                      .HasForeignKey(d => d.PersonId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasIndex(e => new { e.Month, e.Year });
-
-
-                entity.HasData(new MonthMovement
+                modelBuilder.Entity<MonthMovement>(entity =>
                 {
+                    entity.HasKey(e => e.Id);
 
 
-                entity.HasData(new MonthMovement{
-                    Id = 1,
-                    MovementId = 1,
-                    PersonId = 1,
-                    Year = 2026,
-                    Month = 2
+                    entity.HasOne(d => d.Movement)
+                          .WithMany()
+                          .HasForeignKey(d => d.MovementId)
+                          .OnDelete(DeleteBehavior.Restrict);
+
+                    entity.HasOne(d => d.Person)
+                          .WithMany()
+                          .HasForeignKey(d => d.PersonId)
+                          .OnDelete(DeleteBehavior.Restrict);
+
+                    entity.HasIndex(e => new { e.Month, e.Year });
+
+
+                    entity.HasData(new MonthMovement
+                    {
+
+
+
+                        Id = 1,
+                        MovementId = 1,
+                        PersonId = 1,
+                        Year = 2026,
+                        Month = 2
+
+
+
+                    });
 
                 });
 
             });
-
         }
-
     }
 }
