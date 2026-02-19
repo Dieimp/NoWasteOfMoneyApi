@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using NoWasteOfMoney.Interfaces;
@@ -23,12 +24,13 @@ namespace NoWasteOfMoney.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<LoginResponseDto>> Login([FromBody] Login login)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
+            Console.WriteLine("Entrou na func");
             var user = await _service.Login(login.Email, login.Password);
 
             if (user == null)
@@ -47,6 +49,8 @@ namespace NoWasteOfMoney.Controllers
             ));
         }
         [HttpPost("create")]
+        [AllowAnonymous]
+
         [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
