@@ -24,11 +24,11 @@ namespace NoWasteOfMoney.Services
         {
             try
             {
-                if (!await PersonExists(personId, monthMovement))
+                if (!await PersonExistsLegacy(personId, monthMovement))
                 {
                     throw new ArgumentException("Houve um problema com a pessoa indicada,valide as informacoes e tente novamente");
                 }
-                if (!await MovementExists(monthMovement))
+                if (!await MovementExists(monthMovement.MovementId))
                 {
                     throw new ArgumentException("Houve um problema com a movimentacao indicada,valide as informacoes e tente novamente");
                 }
@@ -41,7 +41,7 @@ namespace NoWasteOfMoney.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("houve um erro" + ex.ToString());
+                throw new Exception("houve um erro " + ex.ToString());
             }
         }
 
@@ -60,25 +60,28 @@ namespace NoWasteOfMoney.Services
 
         }
 
-        public async Task<PagedResult<MonthMovement>> GetAll(int pageNumber, int pageSize, int personId)
+        public async Task<PagedResult<MonthMovement>> GetAll(int pageNumber, int pageSize, int? personId = null)
         {
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 10;
 
+            var query = _context.MonthMovements.AsQueryable();
 
-
-            int totalCount = await _context.MonthMovements.CountAsync(m => m.PersonId == personId); ;
-
-            if (totalCount == 0)
+            if (personId.HasValue)
             {
-                throw new ArgumentException("Houve um problema com a pessoa indicada,valide as informacoes e tente novamente");
+                if (!await PersonExists(personId.Value))
+                {
+                    throw new ArgumentException("Houve um problema com a pessoa indicada,valide as informacoes e tente novamente");
+                }
+                query = query.Where(m => m.PersonId == personId.Value);
             }
 
+            int totalCount = await query.CountAsync();
             int skipAmount = (pageNumber - 1) * pageSize;
 
             var monthMovements =
-                await _context.MonthMovements
-                    .OrderBy(p => new { p.Year, p.Month })
+                await query
+                    .OrderBy(p => p.Year).ThenBy(p => p.Month)
                     .Skip(skipAmount)
                     .Take(pageSize)
                     .AsNoTracking()
@@ -91,34 +94,31 @@ namespace NoWasteOfMoney.Services
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
-
         }
 
 
         public async Task<PagedResult<MonthMovement>> GetByMonth(int pageNumber, int pageSize, int personId, DateOnly referenceDate)
         {
-
-            int Year;
-            int month;
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 10;
 
-            Year = referenceDate.Year;
-            month = referenceDate.Month;
+            int year = referenceDate.Year;
+            int month = referenceDate.Month;
 
-            int totalCount = await _context.MonthMovements.CountAsync(m => m.PersonId == personId); ;
-
-            if (totalCount == 0)
+            if (!await PersonExists(personId))
             {
                 throw new ArgumentException("Houve um problema com a pessoa indicada,valide as informacoes e tente novamente");
             }
 
+            var query = _context.MonthMovements
+                .Where(m => m.PersonId == personId && m.Year == year && m.Month == month);
+
+            int totalCount = await query.CountAsync();
             int skipAmount = (pageNumber - 1) * pageSize;
 
             var monthMovements =
-                await _context.MonthMovements
+                await query
                     .Include(m => m.Movement)
-                    .Where(m => m.Year == Year && m.Month == month)
                     .OrderBy(m => m.Year)
                     .ThenBy(m => m.Month)
                     .Skip(skipAmount)
@@ -133,7 +133,6 @@ namespace NoWasteOfMoney.Services
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
-
         }
 
         public async Task<MonthMovement?> Update(int id, MonthMovement monthMovement)
@@ -145,11 +144,11 @@ namespace NoWasteOfMoney.Services
                 return null;
             }
 
-            if (!await PersonExists(findedMonthMovement.PersonId, monthMovement))
+            if (!await PersonExistsLegacy(findedMonthMovement.PersonId, monthMovement))
             {
                 throw new ArgumentException("Houve um problema com a pessoa indicada,valide as informacoes e tente novamente");
             }
-            if (!await MovementExists(monthMovement))
+            if (!await MovementExists(monthMovement.MovementId))
             {
                 throw new ArgumentException("Houve um problema com a movimentacao indicada,valide as informacoes e tente novamente");
             }
@@ -165,29 +164,20 @@ namespace NoWasteOfMoney.Services
             return findedMonthMovement;
         }
 
-        private async Task<bool> PersonExists(int personId, MonthMovement monthMovement)
+        private async Task<bool> PersonExists(int personId)
         {
+            return await _context.Persons.AnyAsync(p => p.Id == personId);
+        }
 
+        private async Task<bool> PersonExistsLegacy(int personId, MonthMovement monthMovement)
+        {
             return personId == monthMovement.PersonId &&
                await _context.Persons.AnyAsync(p => p.Id == personId);
         }
 
-        private async Task<bool> MovementExists(MonthMovement monthMovement)
+        private async Task<bool> MovementExists(int movementId)
         {
-            MonthMovement movement;
-
-            movement = await _context.MonthMovements.FindAsync(monthMovement.MovementId);
-
-            if (movement == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
-
+            return await _context.Movements.AnyAsync(m => m.Id == movementId);
         }
     }
 }

@@ -26,7 +26,8 @@ namespace NoWasteOfMoney.Controllers
         public async Task<ActionResult<PagedResult<MonthMovement>>> GetMonthMovements(
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10,
-            [FromQuery] int personId = 10)
+            [FromQuery] int? personId = null
+        )
         {
             var pagedResult = await _service.GetAll(pageNumber, pageSize, personId);
             return Ok(pagedResult);

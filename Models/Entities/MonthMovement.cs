@@ -24,5 +24,6 @@ namespace NoWasteOfMoney.Models.Entities
         public decimal Value { get; set; }
         public virtual Movement Movement { get; set; } = null!;
         public virtual Person Person { get; set; } = null!;
+
     }
 }
