@@ -9,7 +9,7 @@ namespace NoWasteOfMoney.Interfaces
 {
     public interface IMonthMovementService
     {
-        Task<PagedResult<MonthMovement>> GetAll(int pageNumber, int pageSize, int personId);
+        Task<PagedResult<MonthMovement>> GetAll(int pageNumber, int pageSize, int? personId = null);
         Task<PagedResult<MonthMovement>> GetByMonth(int pageNumber, int pageSize, int personId, DateOnly date);
         Task<MonthMovement> Create(int personId, MonthMovement monthMovement);
         Task<MonthMovement?> Update(int id, MonthMovement monthMovement);
