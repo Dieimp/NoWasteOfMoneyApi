@@ -54,6 +54,26 @@ namespace NoWasteOfMoney.Controllers
             return Ok(pagedResult);
         }
 
+        [HttpGet("person/{personId:int}/resume/{date}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<MonthResumeDto>> GetMonthResume(
+            int personId,
+            DateOnly? date
+        )
+        {
+            try 
+            {
+                DateOnly refDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
+                var resume = await _service.GetMonthResume(personId, refDate);
+                return Ok(resume);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpPost("{personId}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

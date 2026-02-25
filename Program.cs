@@ -1,3 +1,5 @@
+using System;
+using System.Text.Json.Serialization;
 using NoWasteOfMoney.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using NoWasteOfMoney.Interfaces;
@@ -26,7 +28,10 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
