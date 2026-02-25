@@ -35,6 +35,14 @@ namespace NoWasteOfMoney.Service.Services
 
             // Console.WriteLine(BCrypt.Net.BCrypt.HashPassword(user.PasswordHash));
 
+<<<<<<< Updated upstream
+=======
+            var user = await _context.Users
+                .Include(u => u.Person)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.PersonId == person.Id);
+            Console.WriteLine(user.PasswordHash);
+>>>>>>> Stashed changes
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
             Console.WriteLine(isPasswordValid);

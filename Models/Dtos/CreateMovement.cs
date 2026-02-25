@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace NoWasteOfMoney.Models.Dtos
 {
     public record CreateMovementRequest(
-        [Required] string Name,
-        [Required] string Description,
+        [Required][StringLength(255)] string Name,
+        [Required][StringLength(500)] string Description,
         [Required] int MovementTypeId
     );
 }

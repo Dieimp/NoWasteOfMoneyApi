@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,10 +8,10 @@ namespace NoWasteOfMoney.Models.Dtos
 {
     public record CreateUser
     (
-        int Id
-       , int UserId
-       , string PasswordHash
-       , string Role
-       , DateTime CreatedAt
+       [Required] int Id
+       , [Required] int UserId
+       , [Required] string PasswordHash
+       , [Required] string Role
+       , [Required] DateTime CreatedAt
     );
 }

@@ -5,12 +5,16 @@ using Microsoft.EntityFrameworkCore;
 using NoWasteOfMoney.Interfaces;
 using NoWasteOfMoney.Services;
 using NoWasteOfMoney.Service.Services;
+<<<<<<< Updated upstream
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.OpenApi.Models;
+=======
+
+>>>>>>> Stashed changes
 
 var builder = WebApplication.CreateBuilder(args);
 
