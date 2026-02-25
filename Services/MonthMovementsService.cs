@@ -135,6 +135,44 @@ namespace NoWasteOfMoney.Services
             };
         }
 
+        public async Task<MonthResumeDto> GetMonthResume(int personId, DateOnly referenceDate)
+        {
+            int year = referenceDate.Year;
+            int month = referenceDate.Month;
+
+            if (!await PersonExists(personId))
+            {
+                throw new ArgumentException("Houve um problema com a pessoa indicada,valide as informacoes e tente novamente");
+            }
+
+            var movements = await _context.MonthMovements
+                .Include(m => m.Movement)
+                .ThenInclude(mv => mv.MovementType)
+                .Where(m => m.PersonId == personId && m.Year == year && m.Month == month)
+                .OrderBy(m => m.Year)
+                .ThenBy(m => m.Month)
+                .AsNoTracking()
+                .ToListAsync();
+
+            decimal total = 0;
+            foreach (var mov in movements)
+            {
+                if (mov.Movement != null)
+                {
+                    if (mov.Movement.MovementTypeId == 1) // Debit
+                    {
+                        total -= mov.Value;
+                    }
+                    else if (mov.Movement.MovementTypeId == 2) // Credit
+                    {
+                        total += mov.Value;
+                    }
+                }
+            }
+
+            return new MonthResumeDto(movements, total);
+        }
+
         public async Task<MonthMovement?> Update(int id, MonthMovement monthMovement)
         {
             var findedMonthMovement = await _context.MonthMovements.FindAsync(id);
