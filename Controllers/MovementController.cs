@@ -62,9 +62,15 @@ namespace NoWasteOfMoney.Controllers
                 MovementTypeId = req.MovementTypeId
             };
 
-            await _service.Create(movement);
-
-            return Ok(movement.Id);
+            try 
+            {
+                await _service.Create(movement);
+                return Ok(movement.Id);
+            } 
+            catch (ArgumentException ex) 
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
@@ -85,14 +91,20 @@ namespace NoWasteOfMoney.Controllers
                 return BadRequest(ModelState);
             }
 
-            var updatedMovement = await _service.Update(id, movement);
-
-            if (updatedMovement == null)
+            try 
             {
-                return NotFound($"Pessoa com ID {id} não encontrada.");
-            }
-            return Ok(updatedMovement);
+                var updatedMovement = await _service.Update(id, movement);
 
+                if (updatedMovement == null)
+                {
+                    return NotFound($"Pessoa com ID {id} não encontrada.");
+                }
+                return Ok(updatedMovement);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]

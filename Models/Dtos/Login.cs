@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace NoWasteOfMoney.Models.Dtos
 {
     public record Login(
-        [Required] string Email,
+        [Required][EmailAddress(ErrorMessage = "O email fornecido não é válido.")] string Email,
         [Required] string Password
 
     );

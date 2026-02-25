@@ -55,6 +55,11 @@ namespace NoWasteOfMoney.Services
 
         public async Task<Movement> Create(Movement movement)
         {
+            if (movement.MovementTypeId != MovementType.Debit.Id && movement.MovementTypeId != MovementType.Credit.Id)
+            {
+                throw new ArgumentException("O tipo de movimentação indicado é inválido. Utilize 1 para Débito ou 2 para Crédito.");
+            }
+
             _context.Movements.Add(movement);
             await _context.SaveChangesAsync();
             return movement;
@@ -67,6 +72,11 @@ namespace NoWasteOfMoney.Services
             if (findedMovement == null)
             {
                 return null;
+            }
+
+            if (movement.MovementTypeId != MovementType.Debit.Id && movement.MovementTypeId != MovementType.Credit.Id)
+            {
+                throw new ArgumentException("O tipo de movimentação indicado é inválido. Utilize 1 para Débito ou 2 para Crédito.");
             }
 
             findedMovement.Name = movement.Name;

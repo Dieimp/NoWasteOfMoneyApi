@@ -49,8 +49,11 @@ namespace NoWasteOfMoney.Controllers
             ));
         }
         [HttpPost("create")]
+<<<<<<< Updated upstream
         [AllowAnonymous]
 
+=======
+>>>>>>> Stashed changes
         [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
