@@ -35,10 +35,6 @@ namespace NoWasteOfMoney.Infrastructure.Database
                    Email = "adimin@semPerdaDeDinheiro.com"
                }
             );
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 
 
             modelBuilder.Entity<MovementType>(entity =>
@@ -66,12 +62,9 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 entity.HasIndex(e => e.MovementTypeId);
 
                 entity.HasData(
-<<<<<<< Updated upstream
 
 
 
-=======
->>>>>>> Stashed changes
                     new Movement
                     {
                         Id = 1,
@@ -107,7 +100,6 @@ namespace NoWasteOfMoney.Infrastructure.Database
                     entity.HasIndex(e => new { e.Month, e.Year });
 
 
-<<<<<<< Updated upstream
                     entity.HasData(new MonthMovement
                     {
 
@@ -122,15 +114,6 @@ namespace NoWasteOfMoney.Infrastructure.Database
 
 
                     });
-=======
-                entity.HasData(new MonthMovement
-                {
-                    Id = 1,
-                    MovementId = 1,
-                    PersonId = 1,
-                    Year = 2026,
-                    Month = 2
->>>>>>> Stashed changes
 
                 });
 

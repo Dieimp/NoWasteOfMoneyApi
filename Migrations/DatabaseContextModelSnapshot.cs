@@ -163,12 +163,6 @@ namespace NoWasteOfMoney.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
-<<<<<<< Updated upstream
-=======
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
->>>>>>> Stashed changes
                     b.HasKey("Id");
 
                     b.HasIndex("PersonId");

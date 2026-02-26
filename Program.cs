@@ -5,16 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using NoWasteOfMoney.Interfaces;
 using NoWasteOfMoney.Services;
 using NoWasteOfMoney.Service.Services;
-<<<<<<< Updated upstream
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.OpenApi.Models;
-=======
-
->>>>>>> Stashed changes
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,13 +60,14 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-// 3. Forçar Autorização Global em todos os Controllers
+// 3. Forçar Autorização Global e Envelope Pattern em todos os Controllers
 builder.Services.AddControllers(config =>
 {
     var policy = new AuthorizationPolicyBuilder()
                      .RequireAuthenticatedUser()
                      .Build();
     config.Filters.Add(new AuthorizeFilter(policy));
+    config.Filters.Add<NoWasteOfMoney.Infrastructure.Filters.EnvelopeFilter>();
 });
 
 builder.Services.AddScoped<IPersonsService, PersonsService>();
