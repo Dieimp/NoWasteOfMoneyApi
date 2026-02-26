@@ -52,13 +52,19 @@ namespace NoWasteOfMoney.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Person>> Create(Person person)
+        public async Task<ActionResult<Person>> Create(CreatePerson createPerson)
         {
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            var person = new Person
+            {
+                FirstName = createPerson.FirstName,
+                LastName = createPerson.LastName,
+                Email = createPerson.Email
+            };
 
             var novaPessoa = await _service.Create(person);
             return CreatedAtAction(nameof(Create), new { id = novaPessoa.Id }, novaPessoa);
