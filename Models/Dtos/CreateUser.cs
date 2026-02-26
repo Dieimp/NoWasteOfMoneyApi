@@ -8,8 +8,7 @@ namespace NoWasteOfMoney.Models.Dtos
 {
     public record CreateUser
     (
-       [Required] int Id
-       , [Required] int UserId
+        [Required] int UserId
        , [Required] string PasswordHash
        , [Required] string Role
        , [Required] DateTime CreatedAt

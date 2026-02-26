@@ -58,8 +58,6 @@ namespace NoWasteOfMoney.Controllers
 
             var user = new User
             {
-                Id = createUser.Id
-                ,
                 PersonId = createUser.UserId
                 ,
                 PasswordHash = createUser.PasswordHash
