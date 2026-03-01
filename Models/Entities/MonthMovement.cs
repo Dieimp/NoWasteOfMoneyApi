@@ -8,12 +8,12 @@ namespace NoWasteOfMoney.Models.Entities
 {
     public class MonthMovement
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
-        public int MovementId { get; set; }
+        public Guid MovementId { get; set; }
         [Required]
-        public int PersonId { get; set; }
+        public Guid PersonId { get; set; }
 
         [Required]
         public int Year { get; set; }

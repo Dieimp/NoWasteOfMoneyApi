@@ -12,8 +12,8 @@ using NoWasteOfMoney.Infrastructure.Database;
 namespace NoWasteOfMoney.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260209230106_CorrectUserSets")]
-    partial class CorrectUserSets
+    [Migration("20260301220735_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,20 +27,17 @@ namespace NoWasteOfMoney.Migrations
 
             modelBuilder.Entity("NoWasteOfMoney.Models.Entities.MonthMovement", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("Month")
                         .HasColumnType("int");
 
-                    b.Property<int>("MovementId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("MovementId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("char(36)");
 
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(65,30)");
@@ -61,10 +58,10 @@ namespace NoWasteOfMoney.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("33333333-0000-0000-0000-000000000001"),
                             Month = 2,
-                            MovementId = 1,
-                            PersonId = 1,
+                            MovementId = new Guid("22222222-0000-0000-0000-000000000001"),
+                            PersonId = new Guid("11111111-0000-0000-0000-000000000001"),
                             Value = 0m,
                             Year = 2026
                         });
@@ -72,11 +69,8 @@ namespace NoWasteOfMoney.Migrations
 
             modelBuilder.Entity("NoWasteOfMoney.Models.Entities.Movement", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -100,14 +94,14 @@ namespace NoWasteOfMoney.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("22222222-0000-0000-0000-000000000001"),
                             Description = "Ficar grande",
                             MovementTypeId = 1,
                             Name = "Academia"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = new Guid("22222222-0000-0000-0000-000000000002"),
                             Description = "Receba inteligencia",
                             MovementTypeId = 1,
                             Name = "Pos graduacao"
@@ -143,11 +137,9 @@ namespace NoWasteOfMoney.Migrations
 
             modelBuilder.Entity("NoWasteOfMoney.Models.Entities.NoWasteOfMoney.Domain.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -156,8 +148,8 @@ namespace NoWasteOfMoney.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -165,9 +157,6 @@ namespace NoWasteOfMoney.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -178,11 +167,8 @@ namespace NoWasteOfMoney.Migrations
 
             modelBuilder.Entity("NoWasteOfMoney.Models.Entities.Person", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -209,7 +195,7 @@ namespace NoWasteOfMoney.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("11111111-0000-0000-0000-000000000001"),
                             Email = "adimin@semPerdaDeDinheiro.com",
                             FirstName = "Pessoa",
                             LastName = "Top"

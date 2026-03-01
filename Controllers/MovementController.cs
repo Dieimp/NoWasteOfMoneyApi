@@ -22,7 +22,7 @@ namespace NoWasteOfMoney.Controllers
             _service = service;
         }
 
-        // GET: api/Pessoas?pageNumber=2&pageSize=10
+        // GET: api/Movement?pageNumber=2&pageSize=10
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<PagedResult<Movement>>> GetMovements(
@@ -34,16 +34,16 @@ namespace NoWasteOfMoney.Controllers
             return Ok(pagedResult);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Movement>> ReadById(int id)
+        public async Task<ActionResult<Movement>> ReadById(Guid id)
         {
             var movement = await _service.GetById(id);
 
             if (movement == null)
             {
-                return NotFound($"Pessoa com ID {id} não encontrada.");
+                return NotFound($"Movimento com ID {id} não encontrado.");
             }
 
             return Ok(movement);
@@ -73,11 +73,11 @@ namespace NoWasteOfMoney.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPut("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(int id, CreateMovementRequest req)
+        public async Task<IActionResult> Update(Guid id, CreateMovementRequest req)
         {
             var movement = new Movement
             {
@@ -97,7 +97,7 @@ namespace NoWasteOfMoney.Controllers
 
                 if (updatedMovement == null)
                 {
-                    return NotFound($"Pessoa com ID {id} não encontrada.");
+                    return NotFound($"Movimento com ID {id} não encontrado.");
                 }
                 return Ok(updatedMovement);
             }
@@ -107,16 +107,16 @@ namespace NoWasteOfMoney.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var isDeleted = await _service.Delete(id);
 
             if (!isDeleted)
             {
-                return NotFound($"Pessoa com ID {id} não encontrada.");
+                return NotFound($"Movimento com ID {id} não encontrado.");
             }
 
             return NoContent();

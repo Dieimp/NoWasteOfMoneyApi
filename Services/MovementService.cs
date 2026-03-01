@@ -48,7 +48,7 @@ namespace NoWasteOfMoney.Services
 
         }
 
-        public async Task<Movement?> GetById(int id)
+        public async Task<Movement?> GetById(Guid id)
         {
             return await _context.Movements.FindAsync(id);
         }
@@ -60,12 +60,13 @@ namespace NoWasteOfMoney.Services
                 throw new ArgumentException("O tipo de movimentação indicado é inválido. Utilize 1 para Débito ou 2 para Crédito.");
             }
 
+            movement.Id = Guid.NewGuid();
             _context.Movements.Add(movement);
             await _context.SaveChangesAsync();
             return movement;
         }
 
-        public async Task<Movement?> Update(int id, Movement movement)
+        public async Task<Movement?> Update(Guid id, Movement movement)
         {
             var findedMovement = await _context.Movements.FindAsync(id);
 
@@ -92,7 +93,7 @@ namespace NoWasteOfMoney.Services
         }
 
         // DELETE
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(Guid id)
         {
             var findedMovement = await _context.Movements.FindAsync(id);
             if (findedMovement == null)

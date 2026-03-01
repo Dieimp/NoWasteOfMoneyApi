@@ -8,7 +8,7 @@ namespace NoWasteOfMoney.Models.Entities
     public class Movement
     {
 
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         [StringLength(255)]

@@ -20,24 +20,26 @@ namespace NoWasteOfMoney.Controllers
         {
             _service = service;
         }
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PagedResult<MonthMovement>>> GetMonthMovements(
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10,
-            [FromQuery] int? personId = null
+            [FromQuery] Guid? personId = null
         )
         {
             var pagedResult = await _service.GetAll(pageNumber, pageSize, personId);
             return Ok(pagedResult);
         }
-        [HttpGet("person/{personId:int}/date/{date}")]
+
+        [HttpGet("person/{personId:guid}/date/{date}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
         public async Task<ActionResult<PagedResult<MonthMovement>>> GetMonthMovementsByMonth(
-                    int personId,
+                    Guid personId,
                     DateOnly? date,
                     [FromQuery] int pageNumber = 1,
                     [FromQuery] int pageSize = 10
@@ -54,11 +56,11 @@ namespace NoWasteOfMoney.Controllers
             return Ok(pagedResult);
         }
 
-        [HttpGet("person/{personId:int}/resume/{date}")]
+        [HttpGet("person/{personId:guid}/resume/{date}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<MonthResumeDto>> GetMonthResume(
-            int personId,
+            Guid personId,
             DateOnly? date
         )
         {
@@ -74,23 +76,19 @@ namespace NoWasteOfMoney.Controllers
             }
         }
 
-        [HttpPost("{personId}")]
+        [HttpPost("{personId:guid}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<MonthMovement>> Create(int personId, CreateMonthMovement req)
+        public async Task<ActionResult<MonthMovement>> Create(Guid personId, CreateMonthMovement req)
         {
-
 
             var monthMovement = new MonthMovement
             {
                 MovementId = req.MovementId,
-                // PersonId = req.PersonId,
-                Year = req.Date.Year,
-                Month = req.Date.Month,
-                Value = req.Value,
-
+                Year       = req.Date.Year,
+                Month      = req.Date.Month,
+                Value      = req.Value,
             };
-            //Console.WriteLine("id: " + personId.ToString());
             monthMovement.PersonId = personId;
             await _service.Create(personId, monthMovement);
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -9,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NoWasteOfMoney.Migrations
 {
     /// <inheritdoc />
-    public partial class MvpDatabase : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,8 +34,7 @@ namespace NoWasteOfMoney.Migrations
                 name: "Persons",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     FirstName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     LastName = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
@@ -54,8 +52,7 @@ namespace NoWasteOfMoney.Migrations
                 name: "Movements",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Name = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
@@ -78,20 +75,14 @@ namespace NoWasteOfMoney.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    PersonId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     PasswordHash = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Role = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    PersonId = table.Column<int>(type: "int", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -109,10 +100,9 @@ namespace NoWasteOfMoney.Migrations
                 name: "MonthMovements",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    MovementId = table.Column<int>(type: "int", nullable: false),
-                    PersonId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    MovementId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    PersonId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Year = table.Column<int>(type: "int", nullable: false),
                     Month = table.Column<int>(type: "int", nullable: false),
                     Value = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
@@ -143,6 +133,25 @@ namespace NoWasteOfMoney.Migrations
                     { 1, "Debit" },
                     { 2, "Credit" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Persons",
+                columns: new[] { "Id", "Email", "FirstName", "LastName" },
+                values: new object[] { new Guid("11111111-0000-0000-0000-000000000001"), "adimin@semPerdaDeDinheiro.com", "Pessoa", "Top" });
+
+            migrationBuilder.InsertData(
+                table: "Movements",
+                columns: new[] { "Id", "Description", "MovementTypeId", "Name" },
+                values: new object[,]
+                {
+                    { new Guid("22222222-0000-0000-0000-000000000001"), "Ficar grande", 1, "Academia" },
+                    { new Guid("22222222-0000-0000-0000-000000000002"), "Receba inteligencia", 1, "Pos graduacao" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "MonthMovements",
+                columns: new[] { "Id", "Month", "MovementId", "PersonId", "Value", "Year" },
+                values: new object[] { new Guid("33333333-0000-0000-0000-000000000001"), 2, new Guid("22222222-0000-0000-0000-000000000001"), new Guid("11111111-0000-0000-0000-000000000001"), 0m, 2026 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_MonthMovements_Month_Year",
