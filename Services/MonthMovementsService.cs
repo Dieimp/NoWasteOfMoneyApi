@@ -20,7 +20,7 @@ namespace NoWasteOfMoney.Services
             _context = context;
         }
 
-        public async Task<MonthMovement> Create(int personId, MonthMovement monthMovement)
+        public async Task<MonthMovement> Create(Guid personId, MonthMovement monthMovement)
         {
             try
             {
@@ -33,6 +33,7 @@ namespace NoWasteOfMoney.Services
                     throw new ArgumentException("Houve um problema com a movimentacao indicada,valide as informacoes e tente novamente");
                 }
 
+                monthMovement.Id = Guid.NewGuid();
                 _context.MonthMovements.Add(monthMovement);
                 await _context.SaveChangesAsync();
 
@@ -46,7 +47,7 @@ namespace NoWasteOfMoney.Services
         }
 
         //duvida 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(Guid id)
         {
             var findedMonthMovement = await _context.MonthMovements.FindAsync(id);
             if (findedMonthMovement == null)
@@ -60,7 +61,7 @@ namespace NoWasteOfMoney.Services
 
         }
 
-        public async Task<PagedResult<MonthMovement>> GetAll(int pageNumber, int pageSize, int? personId = null)
+        public async Task<PagedResult<MonthMovement>> GetAll(int pageNumber, int pageSize, Guid? personId = null)
         {
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 10;
@@ -97,7 +98,7 @@ namespace NoWasteOfMoney.Services
         }
 
 
-        public async Task<PagedResult<MonthMovement>> GetByMonth(int pageNumber, int pageSize, int personId, DateOnly referenceDate)
+        public async Task<PagedResult<MonthMovement>> GetByMonth(int pageNumber, int pageSize, Guid personId, DateOnly referenceDate)
         {
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 10;
@@ -135,7 +136,7 @@ namespace NoWasteOfMoney.Services
             };
         }
 
-        public async Task<MonthResumeDto> GetMonthResume(int personId, DateOnly referenceDate)
+        public async Task<MonthResumeDto> GetMonthResume(Guid personId, DateOnly referenceDate)
         {
             int year = referenceDate.Year;
             int month = referenceDate.Month;
@@ -173,7 +174,7 @@ namespace NoWasteOfMoney.Services
             return new MonthResumeDto(movements, total);
         }
 
-        public async Task<MonthMovement?> Update(int id, MonthMovement monthMovement)
+        public async Task<MonthMovement?> Update(Guid id, MonthMovement monthMovement)
         {
             var findedMonthMovement = await _context.MonthMovements.FindAsync(id);
 
@@ -202,18 +203,18 @@ namespace NoWasteOfMoney.Services
             return findedMonthMovement;
         }
 
-        private async Task<bool> PersonExists(int personId)
+        private async Task<bool> PersonExists(Guid personId)
         {
             return await _context.Persons.AnyAsync(p => p.Id == personId);
         }
 
-        private async Task<bool> PersonExistsLegacy(int personId, MonthMovement monthMovement)
+        private async Task<bool> PersonExistsLegacy(Guid personId, MonthMovement monthMovement)
         {
             return personId == monthMovement.PersonId &&
                await _context.Persons.AnyAsync(p => p.Id == personId);
         }
 
-        private async Task<bool> MovementExists(int movementId)
+        private async Task<bool> MovementExists(Guid movementId)
         {
             return await _context.Movements.AnyAsync(m => m.Id == movementId);
         }

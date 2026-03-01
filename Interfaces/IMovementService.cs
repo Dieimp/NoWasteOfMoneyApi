@@ -10,9 +10,9 @@ namespace NoWasteOfMoney.Interfaces
     public interface IMovementService
     {
         Task<PagedResult<Movement>> GetAll(int pageNumber, int pageSize);
-        Task<Movement?> GetById(int id);
+        Task<Movement?> GetById(Guid id);
         Task<Movement> Create(Movement movement);
-        Task<Movement?> Update(int id, Movement movement);
-        Task<bool> Delete(int id);
+        Task<Movement?> Update(Guid id, Movement movement);
+        Task<bool> Delete(Guid id);
     }
 }

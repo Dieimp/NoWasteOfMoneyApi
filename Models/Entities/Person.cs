@@ -14,7 +14,7 @@ namespace NoWasteOfMoney.Models.Entities
 
 
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         [Required, StringLength(100)]
         public string FirstName { get; set; }
         [StringLength(255)]

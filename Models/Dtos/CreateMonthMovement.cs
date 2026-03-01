@@ -9,7 +9,7 @@ namespace NoWasteOfMoney.Models.Dtos
     public struct CreateMonthMovement
     {
         [Required(ErrorMessage = "O ID da movimentação é obrigatório.")]
-        public int MovementId { get; init; }
+        public Guid MovementId { get; init; }
 
         // [Required(ErrorMessage = "O ID da pessoa é obrigatório.")]
         // public int PersonId { get; init; }

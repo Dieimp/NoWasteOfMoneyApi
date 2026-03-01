@@ -12,9 +12,9 @@ namespace NoWasteOfMoney.Models.Entities
         {
 
             [Key]
-            public int Id { get; set; }
+            public Guid Id { get; set; }
             [Required]
-            public int PersonId { get; set; }
+            public Guid PersonId { get; set; }
             public string PasswordHash { get; set; }
 
             [Required]

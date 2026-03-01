@@ -62,6 +62,7 @@ namespace NoWasteOfMoney.Service.Services
 
             user.PasswordHash = newPassword;
 
+            user.Id = Guid.NewGuid();
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return user;

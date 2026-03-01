@@ -48,19 +48,20 @@ namespace NoWasteOfMoney.Services
 
         }
 
-        public async Task<Person?> GetById(int id)
+        public async Task<Person?> GetById(Guid id)
         {
             return await _context.Persons.FindAsync(id);
         }
 
         public async Task<Person> Create(Person person)
         {
+            person.Id = Guid.NewGuid();
             _context.Persons.Add(person);
             await _context.SaveChangesAsync();
             return person;
         }
 
-        public async Task<Person?> Update(int id, Person person)
+        public async Task<Person?> Update(Guid id, Person person)
         {
             var findedPerson = await _context.Persons.FindAsync(id);
 
@@ -81,7 +82,7 @@ namespace NoWasteOfMoney.Services
         }
 
         // DELETE
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(Guid id)
         {
             var findedPerson = await _context.Persons.FindAsync(id);
             if (findedPerson == null)
