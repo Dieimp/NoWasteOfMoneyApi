@@ -15,6 +15,7 @@ namespace NoWasteOfMoney.Infrastructure.Database
         public static readonly Guid SeedMovement1Id = new Guid("22222222-0000-0000-0000-000000000001");
         public static readonly Guid SeedMovement2Id = new Guid("22222222-0000-0000-0000-000000000002");
         public static readonly Guid SeedMonthMovId  = new Guid("33333333-0000-0000-0000-000000000001");
+        public static readonly Guid SeedUserId      = new Guid("44444444-0000-0000-0000-000000000001");
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
 
@@ -110,6 +111,27 @@ namespace NoWasteOfMoney.Infrastructure.Database
                     Year       = 2026,
                     Month      = 2,
                     Value      = 0
+                });
+            });
+
+            // ── User ────────────────────────────────────────────────────────────
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.Person)
+                      .WithMany()
+                      .HasForeignKey(d => d.PersonId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasData(new User
+                {
+                    Id           = SeedUserId,
+                    PersonId     = SeedPersonId,
+                    PasswordHash = "$2a$11$VUJroA/DlBXzFO0E7G02vufDNSHx/s220G4FS1ysf3FZgG6TsGmH6", // hash for 'admin'
+                    Role         = "Admin",
+                    CreatedAt    = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 });
             });
         }

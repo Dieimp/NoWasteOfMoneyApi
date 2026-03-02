@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NoWasteOfMoney.Infrastructure.Database;
 
@@ -11,9 +12,11 @@ using NoWasteOfMoney.Infrastructure.Database;
 namespace NoWasteOfMoney.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260301233351_SeedAdminUser")]
+    partial class SeedAdminUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,7 +168,7 @@ namespace NoWasteOfMoney.Migrations
                         {
                             Id = new Guid("44444444-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PasswordHash = "$2a$11$VUJroA/DlBXzFO0E7G02vufDNSHx/s220G4FS1ysf3FZgG6TsGmH6",
+                            PasswordHash = "$2a$11$0nBntBvA262C.DttHkY8VOp1QEqI15hGq1Z4PofM4g/k3QxToz4/O",
                             PersonId = new Guid("11111111-0000-0000-0000-000000000001"),
                             Role = "Admin"
                         });

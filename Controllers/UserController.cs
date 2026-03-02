@@ -30,7 +30,6 @@ namespace NoWasteOfMoney.Controllers
         public async Task<ActionResult<LoginResponseDto>> Login([FromBody] Login login)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            Console.WriteLine("Entrou na func");
             var user = await _service.Login(login.Email, login.Password);
 
             if (user == null)
@@ -54,7 +53,7 @@ namespace NoWasteOfMoney.Controllers
 
         public async Task<ActionResult<User>> Create(CreateUser createUser)
         {
-            Console.WriteLine("entrou na funcao");
+            // Console.WriteLine("entrou na funcao");
 
             var user = new User
             {
@@ -69,7 +68,7 @@ namespace NoWasteOfMoney.Controllers
                 UpdatedAt = null
             };
 
-            Console.WriteLine(user.PersonId);
+            // Console.WriteLine(user.PersonId);
             var newUser = await _service.Create(user);
             return CreatedAtAction(nameof(Create), new { id = newUser.Id }, newUser);
         }

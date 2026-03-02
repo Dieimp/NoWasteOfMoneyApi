@@ -54,7 +54,7 @@ builder.Services.AddAuthentication(x =>
     {
         OnAuthenticationFailed = context =>
         {
-            Console.WriteLine("Falha na autenticação: " + context.Exception.Message);
+            // Console.WriteLine("Falha na autenticação: " + context.Exception.Message);
             return Task.CompletedTask;
         }
     };
