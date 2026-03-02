@@ -25,18 +25,14 @@ namespace NoWasteOfMoney.Service.Services
             {
                 return null;
             }
-            Console.WriteLine("passou person");
+            // Console.WriteLine("passou person");
 
             var user = await _context.Users
                 .Include(u => u.Person)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.PersonId == person.Id);
-            Console.WriteLine(user.PasswordHash);
-
-            // Console.WriteLine(BCrypt.Net.BCrypt.HashPassword(user.PasswordHash));
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
-            Console.WriteLine(isPasswordValid);
             if (!isPasswordValid)
             {
                 return null;
@@ -54,10 +50,10 @@ namespace NoWasteOfMoney.Service.Services
 
             if (person == null)
             {
-                Console.WriteLine("Entrou no null nao achou user id");
+                // Console.WriteLine("Entrou no null nao achou user id");
                 return null;
             }
-            Console.WriteLine("Passou valiudacao de person" + person.Id);
+            // Console.WriteLine("Passou valiudacao de person" + person.Id);
             string newPassword = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
 
             user.PasswordHash = newPassword;
