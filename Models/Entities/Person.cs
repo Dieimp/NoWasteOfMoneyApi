@@ -6,20 +6,22 @@ using System.Threading.Tasks;
 
 namespace NoWasteOfMoney.Models.Entities
 {
+
+    // Localizada em NoWasteOfMoney.Domain.Entities
     public class Person
     {
-        public int Id { get; set; }
+        // Construtor para o EF
 
-        [Required]
-        [StringLength(100)]
+
+        [Key]
+        public Guid Id { get; set; }
+        [Required, StringLength(100)]
         public string FirstName { get; set; }
-
         [StringLength(255)]
         public string LastName { get; set; }
-        [Required]
-        [StringLength(255)]
-        [EmailAddress]
-        public string Email { get; set; }
 
+        [Required, StringLength(255), EmailAddress]
+        public string Email { get; set; }
     }
+
 }

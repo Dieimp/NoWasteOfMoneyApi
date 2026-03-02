@@ -22,7 +22,7 @@ namespace NoWasteOfMoney.Controllers
             _service = service;
         }
 
-        // GET: api/Pessoas?pageNumber=2&pageSize=10
+        // GET: api/Persons?pageNumber=2&pageSize=10
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<PagedResult<Person>>> GetPessoas(
@@ -34,10 +34,10 @@ namespace NoWasteOfMoney.Controllers
             return Ok(pagedResult);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Person>> ReadById(int id)
+        public async Task<ActionResult<Person>> ReadById(Guid id)
         {
             var person = await _service.GetById(id);
 
@@ -52,23 +52,29 @@ namespace NoWasteOfMoney.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Person>> Create(Person person)
+        public async Task<ActionResult<Person>> Create(CreatePerson createPerson)
         {
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            var person = new Person
+            {
+                FirstName = createPerson.FirstName,
+                LastName = createPerson.LastName,
+                Email = createPerson.Email
+            };
+
             var novaPessoa = await _service.Create(person);
             return CreatedAtAction(nameof(Create), new { id = novaPessoa.Id }, novaPessoa);
         }
 
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPut("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(int id, Person person)
+        public async Task<IActionResult> Update(Guid id, Person person)
         {
             if (id != person.Id)
             {
@@ -90,10 +96,10 @@ namespace NoWasteOfMoney.Controllers
 
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var isDeleted = await _service.Delete(id);
 
