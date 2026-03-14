@@ -44,7 +44,8 @@ namespace NoWasteOfMoney.Controllers
                 AccessToken: token,
                 ExpiresAt: expiresAt,
                 Name: user.Person.FirstName,
-                Email: user.Person.Email
+                Email: user.Person.Email,
+                PersonId: user.PersonId
             ));
         }
         [HttpPost("create")]

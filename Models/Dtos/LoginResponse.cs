@@ -9,7 +9,8 @@ namespace NoWasteOfMoney.Models.Dtos
         string AccessToken,
         DateTime ExpiresAt,
         string Name,
-        string Email
+        string Email,
+        Guid PersonId
     // string Password
     );
 }
