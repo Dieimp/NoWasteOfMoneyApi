@@ -129,18 +129,26 @@ namespace NoWasteOfMoney.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<ActionResult<EnvelopeResponse<string>>> Delete(Guid id)
         {
             var isDeleted = await _service.Delete(id);
 
             if (!isDeleted)
             {
-                return NotFound($"Movimentação com ID {id} não encontrada.");
+                return NotFound(new EnvelopeResponse<string>
+                {
+                    Data = $"Movimentação com ID {id} não encontrada.",
+                    Meta = null
+                });
             }
 
-            return NoContent();
+            return Ok(new EnvelopeResponse<string>
+            {
+                Data = $"Movimentação com ID {id} deletada com sucesso.",
+                Meta = null
+            });
         }
 
 
