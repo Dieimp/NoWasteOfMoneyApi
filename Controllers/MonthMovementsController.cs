@@ -102,12 +102,23 @@ namespace NoWasteOfMoney.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<EnvelopeResponse<MonthMovement>>> Update(Guid id, [FromBody] UpdateMonthMovement req)
         {
+            var existing = await _service.GetById(id);
+            if (existing == null)
+            {
+                return NotFound(new EnvelopeResponse<MonthMovement>
+                {
+                    Data = null,
+                    Meta = null
+                });
+            }
+
             var monthMovement = new MonthMovement
             {
                 MovementId = req.MovementId,
                 Year       = req.Date.Year,
                 Month      = req.Date.Month,
                 Value      = req.Value,
+                PersonId   = existing.PersonId
             };
 
             var updated = await _service.Update(id, monthMovement);
