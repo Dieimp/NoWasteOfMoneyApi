@@ -29,6 +29,7 @@ namespace NoWasteOfMoney.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<LoginResponseDto>> Login([FromBody] Login login)
         {
+            Console.WriteLine($"Login attempt for email: {login.Email}");
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var user = await _service.Login(login.Email, login.Password);
 
