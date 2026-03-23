@@ -20,7 +20,7 @@ var key = Encoding.ASCII.GetBytes(jwtKey);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 
-var serverVersion = ServerVersion.AutoDetect(connectionString);
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 0));
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseMySql(connectionString, serverVersion, b =>
@@ -75,6 +75,18 @@ builder.Services.AddScoped<IMovementService, MovementService>();
 builder.Services.AddScoped<IMonthMovementService, MonthMovementsService>();
 builder.Services.AddScoped<IUsersService, UserService>();
 builder.Services.AddScoped<TokenService>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen(c =>
@@ -105,6 +117,22 @@ builder.Services.AddSwaggerGen(c =>
 });
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database migration failed: {ex.Message}");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -113,9 +141,28 @@ if (app.Environment.IsDevelopment())
 }
 // dotnet add package Swashbuckle.AspNetCore.SwaggerUi -Version 9.0.6
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Incoming Request: {context.Request.Method} {context.Request.Path}");
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Unhandled exception: {ex.Message}");
+        Console.WriteLine(ex.StackTrace);
+        throw;
+    }
+});
 
 app.MapControllers();
 

@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: nowasteofmoney_db
+    environment:
+      MYSQL_ROOT_PASSWORD: BPdkJqlupAH4VupLKTF7
+      MYSQL_DATABASE: NoWasteOfMoney
+    ports:
+      - "30306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - app-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nowasteofmoney_api
+    ports:
+      - "8080:8080"
+    environment:
+      # If you need to override the dockerfile default, change it here:
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=NoWasteOfMoney;Uid=root;Pwd=BPdkJqlupAH4VupLKTF7;
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ../NoWasteOfMoneyFront/nowasteofmoneyapp
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8080
+    container_name: nowasteofmoney_web
+    ports:
+      - "3000:3000"
+    environment:
+      - INTERNAL_API_URL=http://api:8080
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+      - NODE_ENV=production
+    depends_on:
+      - api
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
