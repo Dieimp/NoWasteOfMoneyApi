@@ -18,7 +18,7 @@ namespace NoWasteOfMoney.Service.Services
 
         public async Task<User?> Login(string email, string password)
         {
-
+            Console.WriteLine($"UserService.Login called for: {email}");
             Person person = new Person();
             person = await _context.Persons.FirstOrDefaultAsync(p => p.Email == email);
             if (person == null)
@@ -31,6 +31,11 @@ namespace NoWasteOfMoney.Service.Services
                 .Include(u => u.Person)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.PersonId == person.Id);
+
+            if (user == null)
+            {
+                return null;
+            }
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
             if (!isPasswordValid)

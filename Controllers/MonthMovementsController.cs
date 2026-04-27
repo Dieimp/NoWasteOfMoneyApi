@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using NoWasteOfMoney.Interfaces;
 using NoWasteOfMoney.Models.Dtos;
 using NoWasteOfMoney.Models.Entities;
+using NoWasteOfMoney.Models.Responses;
 
 namespace NoWasteOfMoney.Controllers
 {
@@ -93,6 +94,72 @@ namespace NoWasteOfMoney.Controllers
             await _service.Create(personId, monthMovement);
 
             return Ok(monthMovement.Id);
+        }
+
+        [HttpPut("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<EnvelopeResponse<MonthMovement>>> Update(Guid id, [FromBody] UpdateMonthMovement req)
+        {
+            var existing = await _service.GetById(id);
+            if (existing == null)
+            {
+                return NotFound(new EnvelopeResponse<MonthMovement>
+                {
+                    Data = null,
+                    Meta = null
+                });
+            }
+
+            var monthMovement = new MonthMovement
+            {
+                MovementId = req.MovementId,
+                Year       = req.Date.Year,
+                Month      = req.Date.Month,
+                Value      = req.Value,
+                PersonId   = existing.PersonId
+            };
+
+            var updated = await _service.Update(id, monthMovement);
+
+            if (updated == null)
+            {
+                return NotFound(new EnvelopeResponse<MonthMovement>
+                {
+                    Data = null,
+                    Meta = null
+                });
+            }
+
+            return Ok(new EnvelopeResponse<MonthMovement>
+            {
+                Data = updated,
+                Meta = null
+            });
+        }
+
+        [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<EnvelopeResponse<string>>> Delete(Guid id)
+        {
+            var isDeleted = await _service.Delete(id);
+
+            if (!isDeleted)
+            {
+                return NotFound(new EnvelopeResponse<string>
+                {
+                    Data = $"Movimentação com ID {id} não encontrada.",
+                    Meta = null
+                });
+            }
+
+            return Ok(new EnvelopeResponse<string>
+            {
+                Data = $"Movimentação com ID {id} deletada com sucesso.",
+                Meta = null
+            });
         }
 
 

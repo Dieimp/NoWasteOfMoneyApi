@@ -97,6 +97,10 @@ namespace NoWasteOfMoney.Services
             };
         }
 
+        public async Task<MonthMovement?> GetById(Guid id)
+        {
+            return await _context.MonthMovements.FindAsync(id);
+        }
 
         public async Task<PagedResult<MonthMovement>> GetByMonth(int pageNumber, int pageSize, Guid personId, DateOnly referenceDate)
         {
@@ -178,15 +182,13 @@ namespace NoWasteOfMoney.Services
         {
             var findedMonthMovement = await _context.MonthMovements.FindAsync(id);
 
+            Console.WriteLine(monthMovement.PersonId);
+
             if (findedMonthMovement == null)
             {
                 return null;
             }
 
-            if (!await PersonExistsLegacy(findedMonthMovement.PersonId, monthMovement))
-            {
-                throw new ArgumentException("Houve um problema com a pessoa indicada,valide as informacoes e tente novamente");
-            }
             if (!await MovementExists(monthMovement.MovementId))
             {
                 throw new ArgumentException("Houve um problema com a movimentacao indicada,valide as informacoes e tente novamente");
