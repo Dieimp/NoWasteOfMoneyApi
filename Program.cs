@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,12 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseMySql(connectionString, serverVersion, b =>
         b.MigrationsAssembly("NoWasteOfMoney")));
 
-
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -132,6 +138,7 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine($"Database migration failed: {ex.Message}");
     }
 }
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
