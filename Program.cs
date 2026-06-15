@@ -13,166 +13,176 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 
-var builder = WebApplication.CreateBuilder(args);
-
-var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
-var key = Encoding.ASCII.GetBytes(jwtKey);
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-
-var serverVersion = new MySqlServerVersion(new Version(8, 0, 0));
-
-builder.Services.AddDbContext<DatabaseContext>(options =>
-    options.UseMySql(connectionString, serverVersion, b =>
-        b.MigrationsAssembly("NoWasteOfMoney")));
-
-builder.Services.Configure<ForwardedHeadersOptions>(options =>
+namespace NoWasteOfMoney
 {
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    options.KnownNetworks.Clear();
-    options.KnownProxies.Clear();
-});
-
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});
-builder.Services.AddAuthentication(x =>
-{
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x =>
-{
-    x.RequireHttpsMetadata = false; // Mude para true em produção
-    x.SaveToken = true;
-    x.TokenValidationParameters = new TokenValidationParameters
+    public class Program
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-        ValidateAudience = true,
-        ValidAudience = builder.Configuration["JwtSettings:Audience"],
-        ValidateLifetime = true
-    };
-    x.Events = new JwtBearerEvents
-    {
-        OnAuthenticationFailed = context =>
+        public static void Main(string[] args)
         {
-            // Console.WriteLine("Falha na autenticação: " + context.Exception.Message);
-            return Task.CompletedTask;
-        }
-    };
-});
+            var builder = WebApplication.CreateBuilder(args);
 
-// 3. Forçar Autorização Global e Envelope Pattern em todos os Controllers
-builder.Services.AddControllers(config =>
-{
-    var policy = new AuthorizationPolicyBuilder()
-                     .RequireAuthenticatedUser()
-                     .Build();
-    config.Filters.Add(new AuthorizeFilter(policy));
-    config.Filters.Add<NoWasteOfMoney.Infrastructure.Filters.EnvelopeFilter>();
-});
+            var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
+            var key = Encoding.ASCII.GetBytes(jwtKey);
 
-builder.Services.AddScoped<IPersonsService, PersonsService>();
-builder.Services.AddScoped<IMovementService, MovementService>();
-builder.Services.AddScoped<IMonthMovementService, MonthMovementsService>();
-builder.Services.AddScoped<IUsersService, UserService>();
-builder.Services.AddScoped<TokenService>();
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:3000")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
-});
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
+            var serverVersion = new MySqlServerVersion(new Version(8, 0, 0));
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
+            builder.Services.AddDbContext<DatabaseContext>(options =>
+                options.UseMySql(connectionString, serverVersion, b =>
+                    b.MigrationsAssembly("NoWasteOfMoney")));
+
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
-                Reference = new OpenApiReference
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            });
+            builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false; // Mude para true em produção
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["JwtSettings:Audience"],
+                    ValidateLifetime = true
+                };
+                x.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        // Console.WriteLine("Falha na autenticação: " + context.Exception.Message);
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+            // 3. Forçar Autorização Global e Envelope Pattern em todos os Controllers
+            builder.Services.AddControllers(config =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                             .RequireAuthenticatedUser()
+                             .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+                config.Filters.Add<NoWasteOfMoney.Infrastructure.Filters.EnvelopeFilter>();
+            });
+
+            builder.Services.AddScoped<IPersonsService, PersonsService>();
+            builder.Services.AddScoped<IMovementService, MovementService>();
+            builder.Services.AddScoped<IMonthMovementService, MonthMovementsService>();
+            builder.Services.AddScoped<IUsersService, UserService>();
+            builder.Services.AddScoped<TokenService>();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:3000")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
+            });
+
+            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+            builder.Services.AddOpenApi();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
+
+            var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                try
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+                    if (context.Database.GetPendingMigrations().Any())
+                    {
+                        context.Database.Migrate();
+                    }
                 }
-            },
-            Array.Empty<string>()
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Database migration failed: {ex.Message}");
+                }
+            }
+            app.UseForwardedHeaders();
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+            // dotnet add package Swashbuckle.AspNetCore.SwaggerUi -Version 9.0.6
+
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
+            app.UseCors("AllowFrontend");
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.Use(async (context, next) =>
+            {
+                Console.WriteLine($"Incoming Request: {context.Request.Method} {context.Request.Path}");
+                try
+                {
+                    await next();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unhandled exception: {ex.Message}");
+                    Console.WriteLine(ex.StackTrace);
+                    throw;
+                }
+            });
+
+            app.MapControllers();
+
+            app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+
+            app.Run();
         }
-    });
-});
-var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    try
-    {
-        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-        if (context.Database.GetPendingMigrations().Any())
-        {
-            context.Database.Migrate();
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Database migration failed: {ex.Message}");
     }
 }
-app.UseForwardedHeaders();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-// dotnet add package Swashbuckle.AspNetCore.SwaggerUi -Version 9.0.6
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-app.UseCors("AllowFrontend");
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.Use(async (context, next) =>
-{
-    Console.WriteLine($"Incoming Request: {context.Request.Method} {context.Request.Path}");
-    try
-    {
-        await next();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Unhandled exception: {ex.Message}");
-        Console.WriteLine(ex.StackTrace);
-        throw;
-    }
-});
-
-app.MapControllers();
-
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
-
-app.Run();

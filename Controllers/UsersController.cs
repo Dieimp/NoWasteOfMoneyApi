@@ -1,23 +1,19 @@
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using NoWasteOfMoney.Interfaces;
 using NoWasteOfMoney.Models.Dtos;
 using NoWasteOfMoney.Models.Entities;
-using NoWasteOfMoney.Models.Entities.NoWasteOfMoney.Domain.Entities;
-
 
 namespace NoWasteOfMoney.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    [Route("api/users")]
+    public class UsersController : ControllerBase
     {
         private readonly IUsersService _service;
-
         private readonly TokenService _tokenService;
-        public UserController(IUsersService service, TokenService tokenService)
+
+        public UsersController(IUsersService service, TokenService tokenService)
         {
             _service = service;
             _tokenService = tokenService;
@@ -29,13 +25,11 @@ namespace NoWasteOfMoney.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<LoginResponseDto>> Login([FromBody] Login login)
         {
-            Console.WriteLine($"Login attempt for email: {login.Email}");
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var user = await _service.Login(login.Email, login.Password);
 
+            var user = await _service.Login(login.Email, login.Password);
             if (user == null)
             {
-
                 return Unauthorized(new { message = "E-mail ou senha inválidos." });
             }
 
@@ -49,32 +43,32 @@ namespace NoWasteOfMoney.Controllers
                 PersonId: user.PersonId
             ));
         }
-        [HttpPost("create")]
-        [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
-        public async Task<ActionResult<User>> Create(CreateUserLegacy createUser)
+        [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
+        [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<UserResponse>> Create([FromBody] CreateUser createUser)
         {
-            // Console.WriteLine("entrou na funcao");
-
-            var user = new User
+            if (!ModelState.IsValid)
             {
-                PersonId = createUser.UserId
-                ,
-                PasswordHash = createUser.PasswordHash
-                ,
-                Role = createUser.Role
-                ,
-                CreatedAt = createUser.CreatedAt
-                ,
-                UpdatedAt = null
-            };
+                return BadRequest(ModelState);
+            }
 
-            // Console.WriteLine(user.PersonId);
-            var newUser = await _service.Create(user);
-            return CreatedAtAction(nameof(Create), new { id = newUser.Id }, newUser);
+            if (!UserRoles.IsValid(createUser.Role))
+            {
+                return BadRequest(new { message = $"Invalid role: {createUser.Role}" });
+            }
+
+            var createdUser = await _service.CreateAccount(createUser);
+            if (createdUser == null)
+            {
+                return Conflict(new { message = "E-mail já cadastrado." });
+            }
+
+            return CreatedAtAction(nameof(Create), new { id = createdUser.Id }, createdUser);
         }
-
-
     }
 }

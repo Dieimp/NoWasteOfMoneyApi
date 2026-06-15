@@ -4,25 +4,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NoWasteOfMoney.Models.Entities
 {
-
     namespace NoWasteOfMoney.Domain.Entities
     {
-
         public class User
         {
-
             [Key]
-            public Guid Id { get; set; }
-            [Required]
+            public Guid Id { get; set; } = Guid.NewGuid(); // ? Gerado no construtor
+            
+            [Required, ForeignKey("Person")]
             public Guid PersonId { get; set; }
+
+            [Required, MaxLength(255)]
             public string PasswordHash { get; set; }
 
-            [Required]
+            [Required, MaxLength(50)]
             public string Role { get; set; }
-            public DateTime CreatedAt { get; set; }
-            public DateTime? UpdatedAt { get; set; }
-            public virtual Person Person { get; set; } = null!;
 
+            public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+            public DateTime? UpdatedAt { get; set; }
+
+            public virtual Person Person { get; set; } = null!;
         }
     }
 }
