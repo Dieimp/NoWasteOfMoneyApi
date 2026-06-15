@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ namespace NoWasteOfMoney.Infrastructure.Database
 {
     public class DatabaseContext : DbContext
     {
-        // Fixed seed GUIDs — stable across all migrations
+        // Fixed seed GUIDs - stable across all migrations
         public static readonly Guid SeedPersonId    = new Guid("11111111-0000-0000-0000-000000000001");
         public static readonly Guid SeedMovement1Id = new Guid("22222222-0000-0000-0000-000000000001");
         public static readonly Guid SeedMovement2Id = new Guid("22222222-0000-0000-0000-000000000002");
@@ -20,20 +20,17 @@ namespace NoWasteOfMoney.Infrastructure.Database
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
 
         public DbSet<Person> Persons { get; set; }
-
         public DbSet<Movement> Movements { get; set; }
         public DbSet<MonthMovement> MonthMovements { get; set; }
         public DbSet<User> Users { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // ── Person ──────────────────────────────────────────────────────────
+            // Person
             modelBuilder.Entity<Person>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.HasIndex(p => p.Email).IsUnique();
 
                 entity.HasData(new Person
@@ -45,7 +42,7 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 });
             });
 
-            // ── MovementType (smart enum — int PKs stay as-is) ──────────────────
+            // MovementType
             modelBuilder.Entity<MovementType>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -54,7 +51,7 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 entity.HasData(MovementType.Debit, MovementType.Credit);
             });
 
-            // ── Movement ────────────────────────────────────────────────────────
+            // Movement
             modelBuilder.Entity<Movement>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -68,24 +65,12 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 entity.HasIndex(e => e.MovementTypeId);
 
                 entity.HasData(
-                    new Movement
-                    {
-                        Id             = SeedMovement1Id,
-                        Name           = "Academia",
-                        Description    = "Ficar grande",
-                        MovementTypeId = 1
-                    },
-                    new Movement
-                    {
-                        Id             = SeedMovement2Id,
-                        Name           = "Pos graduacao",
-                        Description    = "Receba inteligencia",
-                        MovementTypeId = 1
-                    }
+                    new Movement { Id = SeedMovement1Id, Name = "Academia", Description = "Ficar grande", MovementTypeId = 1 },
+                    new Movement { Id = SeedMovement2Id, Name = "Pos graduacao", Description = "Receba inteligencia", MovementTypeId = 1 }
                 );
             });
 
-            // ── MonthMovement ───────────────────────────────────────────────────
+            // MonthMovement
             modelBuilder.Entity<MonthMovement>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -114,12 +99,12 @@ namespace NoWasteOfMoney.Infrastructure.Database
                 });
             });
 
-            // ── User ────────────────────────────────────────────────────────────
+            // User
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
+                // REMOVED: .ValueGeneratedNever() - ID is generated automatically by MySQL
+                
                 entity.HasOne(d => d.Person)
                       .WithMany()
                       .HasForeignKey(d => d.PersonId)
