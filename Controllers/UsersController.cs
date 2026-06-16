@@ -33,6 +33,8 @@ namespace NoWasteOfMoney.Controllers
                 return Unauthorized(new { message = "E-mail ou senha inválidos." });
             }
 
+            bool isPasswordResetRequired = user.PasswordResetToken != null && user.ResetTokenExpiresAt > DateTime.UtcNow;
+
             var (token, expiresAt) = _tokenService.GenerateToken(user);
 
             return Ok(new LoginResponseDto(
@@ -40,7 +42,8 @@ namespace NoWasteOfMoney.Controllers
                 ExpiresAt: expiresAt,
                 Name: user.Person.FirstName,
                 Email: user.Person.Email,
-                PersonId: user.PersonId
+                PersonId: user.PersonId,
+                IsPasswordResetRequired: isPasswordResetRequired
             ));
         }
 

@@ -34,6 +34,6 @@ ENV ConnectionStrings__DefaultConnection="Server=mysql;Port=3306;Database=NoWast
 
 # Copia os arquivos compilados localmente para dentro do container
 COPY ./publish .
-
+RUN chmod +x ./NoWasteOfMoney
 # Ponto de entrada chamando o executável que o dotnet publish gera
 ENTRYPOINT ["./NoWasteOfMoney"]
