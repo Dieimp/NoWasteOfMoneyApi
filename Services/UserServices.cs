@@ -81,14 +81,18 @@ namespace NoWasteOfMoney.Service.Services
 
             // Gerar ID do Person antes de criar a entidade
             var newPersonId = Guid.NewGuid();
+            //Gera senha temporaria 
+            string temporaryPassword = $"NWM@{Guid.NewGuid().ToString()[..6]}";
 
             var newUser = new User
             {
                 PersonId = newPersonId,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(createUser.Password),
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(temporaryPassword),
                 Role = createUser.Role,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = null
+                UpdatedAt = null,
+                PasswordResetToken = Guid.NewGuid().ToString(),
+                ResetTokenExpiresAt = DateTime.UtcNow.AddHours(48)
             };
 
             var personEntity = new Person
@@ -96,12 +100,13 @@ namespace NoWasteOfMoney.Service.Services
                 Id = newPersonId,
                 FirstName = createUser.Name,
                 LastName = "",
-                Email = createUser.Email
+                Email = createUser.Email,
+
             };
 
             _context.Persons.Add(personEntity);
             _context.Users.Add(newUser);
-            
+
             await _context.SaveChangesAsync();
 
             return new UserResponse(
@@ -110,7 +115,9 @@ namespace NoWasteOfMoney.Service.Services
                 Name: personEntity.FirstName,
                 Email: personEntity.Email,
                 Role: newUser.Role,
-                CreatedAt: newUser.CreatedAt
+                CreatedAt: newUser.CreatedAt,
+                TemporaryPassword: temporaryPassword,
+                ActivationToken: newUser.PasswordResetToken
             );
         }
     }

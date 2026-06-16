@@ -7,7 +7,7 @@ namespace NoWasteOfMoney.Models.Dtos
     (
         [Required] string Name
        , [Required, EmailAddress] string Email
-       , [Required] string Password
+    //    , [Required] string Password
        , [Required] string Role
     );
 }

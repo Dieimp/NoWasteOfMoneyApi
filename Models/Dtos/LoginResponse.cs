@@ -10,7 +10,7 @@ namespace NoWasteOfMoney.Models.Dtos
         DateTime ExpiresAt,
         string Name,
         string Email,
-        Guid PersonId
-    // string Password
+        Guid PersonId,
+        bool IsPasswordResetRequired
     );
 }

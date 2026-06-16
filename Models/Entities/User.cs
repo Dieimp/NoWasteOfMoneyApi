@@ -10,7 +10,7 @@ namespace NoWasteOfMoney.Models.Entities
         {
             [Key]
             public Guid Id { get; set; } = Guid.NewGuid(); // ? Gerado no construtor
-            
+
             [Required, ForeignKey("Person")]
             public Guid PersonId { get; set; }
 
@@ -22,6 +22,11 @@ namespace NoWasteOfMoney.Models.Entities
 
             public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
             public DateTime? UpdatedAt { get; set; }
+
+            [MaxLength(100)]
+            public string? PasswordResetToken { get; set; }
+
+            public DateTime? ResetTokenExpiresAt { get; set; }
 
             public virtual Person Person { get; set; } = null!;
         }

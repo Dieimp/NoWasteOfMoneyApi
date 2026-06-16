@@ -54,21 +54,23 @@ public class UsersControllerTests : IClassFixture<NoWasteOfMoneyWebApplicationFa
     }
 
     [Fact]
-    public async Task Create_AdminWithValidPayload_Returns201WithoutPassword()
+    public async Task Create_AdminWithValidPayload_Returns201AndIncludesTemporaryPasswordAndToken()
     {
+        // Arrange
         var token = GenerateToken(role: "Admin", userId: DatabaseContext.SeedUserId, personId: DatabaseContext.SeedPersonId, name: "Pessoa", email: "adimin@semPerdaDeDinheiro.com");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var payload = new
         {
             name = "Novo Usuario",
-            email = Guid.NewGuid().ToString() + "@test.com", // Unique email per test
-            password = "senha123",
-            role = "User"
+            email = Guid.NewGuid().ToString() + "@test.com", // Email único por teste
+            role = "User" // Note que removi a propriedade 'password'
         };
 
+        // Act
         var response = await _client.PostAsJsonAsync("/api/users", payload);
 
+        // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var body = await response.Content.ReadAsStringAsync();
@@ -78,8 +80,79 @@ public class UsersControllerTests : IClassFixture<NoWasteOfMoneyWebApplicationFa
         Assert.Equal("Novo Usuario", data.GetProperty("name").GetString());
         Assert.Equal(payload.email, data.GetProperty("email").GetString());
         Assert.Equal("User", data.GetProperty("role").GetString());
-        Assert.False(data.TryGetProperty("password", out _));
-        Assert.False(data.TryGetProperty("passwordHash", out _));
+
+        // Valida se as novas propriedades do fluxo de ativação existem e estão preenchidas
+        var tempPassword = data.GetProperty("temporaryPassword").GetString();
+        var activationToken = data.GetProperty("activationToken").GetString();
+
+        Assert.NotNull(tempPassword);
+        Assert.StartsWith("NWM@", tempPassword); // Garante o padrão que estipulamos
+        Assert.NotNull(activationToken);
+        Assert.True(Guid.TryParse(activationToken, out _)); // Verifica se o token é um Guid válido em string
+    }
+    [Fact]
+    public async Task Login_WithTemporaryPassword_SucceedsAndFlagsRequiredReset()
+    {
+        // 1. Arrange: Criar o usuário primeiro como Admin para coletar a senha gerada
+        var adminToken = GenerateToken(role: "Admin", userId: DatabaseContext.SeedUserId, personId: DatabaseContext.SeedPersonId, name: "Pessoa", email: "adimin@semPerdaDeDinheiro.com");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var targetEmail = Guid.NewGuid().ToString() + "@test.com";
+        var creationPayload = new { name = "Usuario Temporario", email = targetEmail, role = "User" };
+
+        var creationResponse = await _client.PostAsJsonAsync("/api/users", creationPayload);
+        Assert.Equal(HttpStatusCode.Created, creationResponse.StatusCode);
+
+
+        var responseWrapper = await creationResponse.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>();
+
+        string generatedTempPassword;
+
+
+        if (responseWrapper != null && responseWrapper.ContainsKey("data"))
+        {
+            var dataElement = responseWrapper["data"];
+
+            generatedTempPassword = dataElement.GetProperty("temporaryPassword").GetString()
+                ?? dataElement.GetProperty("TemporaryPassword").GetString()!;
+        }
+        else
+        {
+
+            var rootElement = await creationResponse.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>();
+            generatedTempPassword = rootElement["temporaryPassword"].GetString()
+                ?? rootElement["TemporaryPassword"].GetString()!;
+        }
+
+        _client.DefaultRequestHeaders.Authorization = null;
+
+        var loginPayload = new
+        {
+            email = targetEmail,
+            password = generatedTempPassword
+        };
+
+        var loginResponse = await _client.PostAsJsonAsync("/api/users/login", loginPayload);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+
+        var loginBody = await loginResponse.Content.ReadAsStringAsync();
+        using var loginDoc = JsonDocument.Parse(loginBody);
+
+        // 1. Primeiro pegamos a raiz do objeto retornado
+        var root = loginDoc.RootElement;
+
+        // 2. Navegamos para dentro do objeto "data" (Conforme o seu JSON real)
+        var dataSection = root.GetProperty("data");
+
+        // 3. Agora sim, extraímos as propriedades de dentro de "data" usando camelCase
+        string accessToken = dataSection.GetProperty("accessToken").GetString()!;
+        bool isPasswordResetRequired = dataSection.GetProperty("isPasswordResetRequired").GetBoolean();
+
+        // 4. Validações finais do xUnit
+        Assert.NotNull(accessToken);
+        Assert.True(isPasswordResetRequired, "O teste falhou porque o usuário com senha temporária deveria exigir o reset de senha (true).");
     }
 
     [Fact]
@@ -96,8 +169,7 @@ public class UsersControllerTests : IClassFixture<NoWasteOfMoneyWebApplicationFa
         var payload = new
         {
             name = "Outro Usuario",
-            email = Guid.NewGuid().ToString() + "@test.com", // Unique email per test
-            password = "senha123",
+            email = Guid.NewGuid().ToString() + "@test.com",
             role = "User"
         };
 
@@ -114,8 +186,7 @@ public class UsersControllerTests : IClassFixture<NoWasteOfMoneyWebApplicationFa
         var payload = new
         {
             name = "Sem Auth",
-            email = Guid.NewGuid().ToString() + "@test.com", // Unique email per test
-            password = "senha123",
+            email = Guid.NewGuid().ToString() + "@test.com",
             role = "User"
         };
 
@@ -134,7 +205,6 @@ public class UsersControllerTests : IClassFixture<NoWasteOfMoneyWebApplicationFa
         {
             name = "",
             email = "email-invalido",
-            password = "123",
             role = ""
         };
 
@@ -153,7 +223,6 @@ public class UsersControllerTests : IClassFixture<NoWasteOfMoneyWebApplicationFa
         {
             name = "Novo Usuario",
             email = "user@test.com",
-            password = "senha123",
             role = "User"
         };
 
@@ -168,7 +237,6 @@ public class UsersControllerTests : IClassFixture<NoWasteOfMoneyWebApplicationFa
     [Fact]
     public async Task Create_AdminWithInvalidRole_Returns400BadRequest()
     {
-        // NOVO TESTE: Role inválida deve retornar 400 Bad Request com mensagem clara
         var token = GenerateToken(role: "Admin", userId: DatabaseContext.SeedUserId, personId: DatabaseContext.SeedPersonId, name: "Pessoa", email: "adimin@semPerdaDeDinheiro.com");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -176,8 +244,7 @@ public class UsersControllerTests : IClassFixture<NoWasteOfMoneyWebApplicationFa
         {
             name = "Novo Usuario",
             email = Guid.NewGuid().ToString() + "@test.com",
-            password = "senha123",
-            role = "superadmin" // Role inexistente - não é Admin nem User
+            role = "superadmin"
         };
 
         var response = await _client.PostAsJsonAsync("/api/users", payload);
@@ -192,7 +259,6 @@ public class UsersControllerTests : IClassFixture<NoWasteOfMoneyWebApplicationFa
     [Fact]
     public async Task Create_AdminWithValidRoles_Returns201()
     {
-        // NOVO TESTE: Roles válidas (Admin e User) devem retornar 201 Created
         var token = GenerateToken(role: "Admin", userId: DatabaseContext.SeedUserId, personId: DatabaseContext.SeedPersonId, name: "Pessoa", email: "adimin@semPerdaDeDinheiro.com");
 
         foreach (var validRole in new[] { "Admin", "User" })
@@ -203,8 +269,7 @@ public class UsersControllerTests : IClassFixture<NoWasteOfMoneyWebApplicationFa
             {
                 name = $"Novo Usuario {validRole}",
                 email = $"{Guid.NewGuid()}@test.com",
-                password = "senha123",
-                role = validRole // Role válida: Admin ou User
+                role = validRole
             };
 
             var response = await _client.PostAsJsonAsync("/api/users", payload);

@@ -6,6 +6,8 @@ namespace NoWasteOfMoney.Models.Dtos
         string Name,
         string Email,
         string Role,
-        DateTime CreatedAt
+        DateTime CreatedAt,
+        string TemporaryPassword,
+        string ActivationToken
     );
 }
